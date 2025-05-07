@@ -1,0 +1,1 @@
+Esta pasta contém as classes de serviço responsáveis pela lógica de negócio.

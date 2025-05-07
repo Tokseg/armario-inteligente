@@ -1,0 +1,1 @@
+Esta pasta contém as interfaces que fazem a comunicação com o banco de dados.
