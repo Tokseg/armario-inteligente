@@ -32,7 +32,7 @@ public class TipoUsuario {
        @Column(length = 500)
         private String descricao;
 
-       @OneToMany(mappedBy = "TipoUsuario")
+       @OneToMany(mappedBy = "tipoUsuario")
        @JsonIgnore
         private List<Usuario> usuarios;
 
