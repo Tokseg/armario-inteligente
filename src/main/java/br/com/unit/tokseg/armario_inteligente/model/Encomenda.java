@@ -34,6 +34,10 @@ public class Encomenda {
     //Só esperando criar o model de usuário
     private Usuario idUsuario;
 
+    public Encomenda() {
+        // construtor padrão exigido pelo JPA
+    }
+
     public Encomenda(String idEncomenda, String descricao, String remetente, LocalDateTime dataRecebimento, Armario armario, Usuario usuario) {
         this.idEncomenda = idEncomenda;
         this.descricao = descricao;

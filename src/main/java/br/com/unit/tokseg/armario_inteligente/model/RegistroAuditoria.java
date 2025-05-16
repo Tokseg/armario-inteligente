@@ -26,6 +26,10 @@ public class RegistroAuditoria {
     @Column(name = "data_hora", nullable = false)
     private LocalDateTime dataHora;
 
+    public RegistroAuditoria() {
+        // construtor padrão exigido pelo JPA
+    }
+
     public RegistroAuditoria(int idRegistro, String acao, String detalhes, LocalDateTime dataHora){
 
         this.idRegistro = idRegistro;
