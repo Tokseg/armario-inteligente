@@ -4,6 +4,43 @@
 
 O Armário Inteligente é um sistema para gerenciamento de armários destinados ao recebimento de encomendas em condomínios. Permite o registro, notificação e auditoria de entregas, integrando diferentes perfis de usuários (morador, porteiro, administrador) e mantendo o controle dos compartimentos do armário.
 
+## Requisitos Técnicos
+
+- Java 17 ou superior
+- Maven 3.6 ou superior
+- Spring Boot 3.x
+- PostgreSQL 12 ou superior
+- IDE compatível com Java (recomendado: IntelliJ IDEA ou Eclipse)
+
+## Instalação e Configuração
+
+1. Clone o repositório:
+```bash
+git clone https://github.com/Tokseg/armario-inteligente.git
+cd armario-inteligente
+```
+
+2. Configure o banco de dados:
+   - Crie um banco de dados PostgreSQL
+   - Configure as credenciais no arquivo `application.properties`:
+```properties
+spring.datasource.url=jdbc:postgresql://localhost:5432/armario_inteligente
+spring.datasource.username=seu_usuario
+spring.datasource.password=sua_senha
+```
+
+3. Compile o projeto:
+```bash
+mvn clean install
+```
+
+4. Execute a aplicação:
+```bash
+mvn spring-boot:run
+```
+
+A aplicação estará disponível em `http://localhost:8080`
+
 ---
 
 ## Estrutura do Projeto
@@ -219,3 +256,74 @@ Content-Type: application/json
   "idUsuario": { ... }
 }
 ```
+
+## Segurança
+
+O sistema implementa as seguintes medidas de segurança:
+- Autenticação via JWT (JSON Web Token)
+- Senhas armazenadas com hash bcrypt
+- Validação de entrada de dados
+- Proteção contra SQL Injection (via JPA/Hibernate)
+- CORS configurado para origens específicas
+
+## Testes
+
+O projeto inclui testes unitários e de integração. Para executar os testes:
+
+```bash
+mvn test
+```
+
+### Configuração do Ambiente de Teste
+
+Para executar os testes corretamente, certifique-se de que:
+
+1. O banco de dados PostgreSQL está rodando
+2. As credenciais de teste estão configuradas em `src/test/resources/application.properties`:
+```properties
+spring.datasource.url=jdbc:postgresql://localhost:5432/armario_inteligente_test
+spring.datasource.username=seu_usuario
+spring.datasource.password=sua_senha
+spring.jpa.hibernate.ddl-auto=create-drop
+```
+
+### Problemas Conhecidos
+
+Atualmente existe um erro conhecido nos testes de integração:
+```
+Failed to load ApplicationContext for [WebMergedContextConfiguration]
+```
+
+Este erro ocorre devido à falta de configuração adequada do ambiente de teste. Para contornar temporariamente:
+
+1. Execute os testes unitários separadamente:
+```bash
+mvn test -Dtest=*UnitTest
+```
+
+2. Ou desative os testes de integração:
+```bash
+mvn test -Dskip.integration.tests=true
+```
+
+Uma correção está sendo desenvolvida e será disponibilizada em breve.
+
+## Logs e Monitoramento
+
+- Logs são gerados usando SLF4J com Logback
+- Níveis de log configuráveis em `application.properties`
+- Logs são salvos em `logs/application.log`
+
+## Contribuição
+
+1. Faça um fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/nova-feature`)
+3. Commit suas mudanças (`git commit -m 'Adiciona nova feature'`)
+4. Push para a branch (`git push origin feature/nova-feature`)
+5. Abra um Pull Request
+
+## Suporte
+
+Para suporte, entre em contato através de:
+- Email: hugo.mramos@souunit.com.br
+- Issues do GitHub: [Link para issues](https://github.com/Tokseg/armario-inteligente/issues)

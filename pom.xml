@@ -5,7 +5,7 @@
 		<parent>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-parent</artifactId>
-			<version>3.4.5</version>
+			<version>3.2.3</version>
 			<relativePath/> <!-- lookup parent from repository -->
 		</parent>
 		<groupId>br.com.unit.tokseg</groupId>
@@ -28,6 +28,7 @@
 		</scm>
 		<properties>
 			<java.version>17</java.version>
+			<lombok.version>1.18.32</lombok.version>
 		</properties>
 		<dependencies>
 			<dependency>
@@ -81,6 +82,7 @@
 							<path>
 								<groupId>org.projectlombok</groupId>
 								<artifactId>lombok</artifactId>
+								<version>${lombok.version}</version>
 							</path>
 						</annotationProcessorPaths>
 					</configuration>

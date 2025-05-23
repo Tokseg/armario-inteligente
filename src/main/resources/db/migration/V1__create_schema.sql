@@ -1,13 +1,13 @@
 -- Migration inicial: Criação do schema do Armário Inteligente
 
 CREATE TABLE tipo_usuario (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    id BIGSERIAL PRIMARY KEY,
     nome VARCHAR(255) NOT NULL UNIQUE,
     descricao VARCHAR(500)
 );
 
 CREATE TABLE usuarios (
-    id_usuario BIGINT PRIMARY KEY AUTO_INCREMENT,
+    id_usuario BIGSERIAL PRIMARY KEY,
     nome VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     senha VARCHAR(255) NOT NULL,
@@ -17,7 +17,7 @@ CREATE TABLE usuarios (
 );
 
 CREATE TABLE armario (
-    id_armario BIGINT PRIMARY KEY AUTO_INCREMENT,
+    id_armario BIGSERIAL PRIMARY KEY,
     ocupado BOOLEAN NOT NULL,
     id_encomenda_atual VARCHAR(255)
 );
@@ -34,7 +34,7 @@ CREATE TABLE encomenda (
 );
 
 CREATE TABLE compartimento (
-    id_compartimento BIGINT PRIMARY KEY AUTO_INCREMENT,
+    id_compartimento BIGSERIAL PRIMARY KEY,
     id_armario BIGINT,
     ocupado BOOLEAN NOT NULL,
     id_encomenda_atual VARCHAR(255),
@@ -51,7 +51,7 @@ CREATE TABLE notificacao (
 );
 
 CREATE TABLE registro_auditoria (
-    id_registro BIGINT PRIMARY KEY AUTO_INCREMENT,
+    id_registro BIGSERIAL PRIMARY KEY,
     acao VARCHAR(255) NOT NULL,
     detalhes VARCHAR(255),
     data_hora TIMESTAMP NOT NULL
