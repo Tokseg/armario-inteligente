@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: armario
+      POSTGRES_USER: armario
+      POSTGRES_PASSWORD: armario
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - armario-network
+
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    command: ./mvnw spring-boot:run -Dspring-boot.run.profiles=docker
+    volumes:
+      - ../:/workspace
+    ports:
+      - "8081:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - db
+    networks:
+      - armario-network
+
+volumes:
+  pgdata:
+
+networks:
+  armario-network:
+    driver: bridge 
