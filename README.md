@@ -287,27 +287,6 @@ spring.datasource.password=sua_senha
 spring.jpa.hibernate.ddl-auto=create-drop
 ```
 
-### Problemas Conhecidos
-
-Atualmente existe um erro conhecido nos testes de integração:
-```
-Failed to load ApplicationContext for [WebMergedContextConfiguration]
-```
-
-Este erro ocorre devido à falta de configuração adequada do ambiente de teste. Para contornar temporariamente:
-
-1. Execute os testes unitários separadamente:
-```bash
-mvn test -Dtest=*UnitTest
-```
-
-2. Ou desative os testes de integração:
-```bash
-mvn test -Dskip.integration.tests=true
-```
-
-Uma correção está sendo desenvolvida e será disponibilizada em breve.
-
 ## Logs e Monitoramento
 
 - Logs são gerados usando SLF4J com Logback
