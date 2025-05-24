@@ -13,20 +13,23 @@ services:
       - pgdata:/var/lib/postgresql/data
     networks:
       - armario-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U armario"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   app:
     build:
       context: ..
       dockerfile: docker/Dockerfile
-    command: ./mvnw spring-boot:run -Dspring-boot.run.profiles=docker
-    volumes:
-      - ../:/workspace
     ports:
       - "8081:8080"
     environment:
       SPRING_PROFILES_ACTIVE: docker
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - armario-network
 

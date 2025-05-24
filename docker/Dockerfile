@@ -1,9 +1,20 @@
 FROM eclipse-temurin:17-jdk-alpine
 
-WORKDIR /workspace
+WORKDIR /app
 
-COPY . .
+# Copiar apenas os arquivos necessários
+COPY pom.xml .
+COPY mvnw .
+COPY .mvn .mvn
+COPY src src
 
-RUN chmod +x mvnw
+# Instalar Maven e compilar a aplicação
+RUN apk add --no-cache maven && \
+    chmod +x mvnw && \
+    ./mvnw clean package -DskipTests
 
-CMD ["./mvnw", "spring-boot:run"] 
+# Expor a porta da aplicação
+EXPOSE 8080
+
+# Comando para executar a aplicação
+CMD ["java", "-jar", "target/armario-inteligente-0.0.1-SNAPSHOT.jar", "--spring.profiles.active=docker"] 
