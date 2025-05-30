@@ -8,56 +8,94 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-
+/**
+ * Entidade que representa uma encomenda no sistema.
+ * Uma encomenda pode estar associada a um armário e a um usuário.
+ * 
+ * Relacionamentos:
+ * - Uma encomenda pertence a um armário (opcional)
+ * - Uma encomenda pertence a um usuário (opcional)
+ */
 @Entity
 @Table(name = "Encomenda")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Encomenda {
 
     @Id
     @Column(name = "idEncomenda")
     private String idEncomenda;
 
+    @Column(nullable = false)
     private String descricao;
+
+    @Column(nullable = false)
     private String remetente;
 
-    @Column(name = "dataRecebimento")
+    @Column(name = "dataRecebimento", nullable = false)
     private LocalDateTime dataRecebimento;
 
     @ManyToOne
     @JoinColumn(name = "idArmario", referencedColumnName = "idArmario")
-    //Só esperando criar o model de armario
-    private Armario idArmario;
+    private Armario armario;
 
     @ManyToOne
-    @JoinColumn(name = "idUsuario", referencedColumnName = "idUsuario")
-    //Só esperando criar o model de usuário
-    private Usuario idUsuario;
+    @JoinColumn(name = "idUsuario", referencedColumnName = "id")
+    private Usuario usuario;
 
-    public Encomenda() {
-        // construtor padrão exigido pelo JPA
-    }
-
-    public Encomenda(String idEncomenda, String descricao, String remetente, LocalDateTime dataRecebimento, Armario armario, Usuario usuario) {
-        this.idEncomenda = idEncomenda;
-        this.descricao = descricao;
-        this.remetente = remetente;
-        this.dataRecebimento = dataRecebimento;
-        this.idArmario = armario;
-        this.idUsuario = usuario;
-    }
-
+    // Getters e Setters
     public String getIdEncomenda() {
         return idEncomenda;
     }
 
-    //Só esperando criar o model de usuário
-    public Usuario getIdUsuario() {
-        return idUsuario;
+    public void setIdEncomenda(String idEncomenda) {
+        this.idEncomenda = idEncomenda;
     }
 
-    //Só esperando criar o model de armario
-    public Armario getIdArmario() {
-        return idArmario;
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
+    public String getRemetente() {
+        return remetente;
+    }
+
+    public void setRemetente(String remetente) {
+        this.remetente = remetente;
+    }
+
+    public LocalDateTime getDataRecebimento() {
+        return dataRecebimento;
+    }
+
+    public void setDataRecebimento(LocalDateTime dataRecebimento) {
+        this.dataRecebimento = dataRecebimento;
+    }
+
+    public Armario getArmario() {
+        return armario;
+    }
+
+    public void setArmario(Armario armario) {
+        this.armario = armario;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 }

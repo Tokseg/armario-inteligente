@@ -15,25 +15,32 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Entidade que representa um tipo de usuário no sistema.
+ * Esta entidade está sendo mantida por compatibilidade com dados existentes,
+ * mas o sistema agora usa o enum TipoUsuarioEnum para os tipos de usuário.
+ * 
+ * @deprecated Use TipoUsuarioEnum ao invés desta classe
+ */
 @Entity
 @Table(name = "tipo_usuario")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Deprecated
 public class TipoUsuario {
 
-       @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-       @Column(nullable = false, unique = true)
-        private String nome;
+    @Column(nullable = false, unique = true)
+    private String nome;
 
-       @Column(length = 500)
-        private String descricao;
+    @Column(length = 500)
+    private String descricao;
 
-       @OneToMany(mappedBy = "tipoUsuario")
-       @JsonIgnore
-        private List<Usuario> usuarios;
-
+    @OneToMany(mappedBy = "tipo")
+    @JsonIgnore
+    private List<Usuario> usuarios;
 }

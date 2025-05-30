@@ -1,81 +1,163 @@
 package br.com.unit.tokseg.armario_inteligente.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
 
+@Data
 @Entity
 @Table(name = "usuarios")
-public class Usuario {
-
+@NoArgsConstructor
+@AllArgsConstructor
+public class Usuario implements UserDetails {
+    
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idUsuario;
-
-    @Column(nullable = false)
-    private String nome;
-
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+    
     @Column(nullable = false, unique = true)
     private String email;
-
+    
     @Column(nullable = false)
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String senha;
-
+    
+    @Column(nullable = false)
+    private String nome;
+    
     @Column(nullable = false)
     private String telefone;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TipoUsuarioEnum tipo;
+    
+    @Column(nullable = false)
+    private boolean ativo = true;
+    
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime dataCriacao;
+    
+    @UpdateTimestamp
+    @Column(nullable = false)
+    private LocalDateTime dataAtualizacao;
 
-    @ManyToOne
-    @JoinColumn(name = "tipo_usuario_id", nullable = false)
-    private TipoUsuario tipoUsuario;
-
-    public Usuario(){}
-    public Usuario(String nome, String email, String senha, String telefone, TipoUsuario tipoUsuario){
-        this.nome = nome;
-        this.email = email;
-        this.senha = senha;
-        this.telefone = telefone;
-        this.tipoUsuario = tipoUsuario;
+    // Getters e Setters manuais
+    public UUID getId() {
+        return id;
     }
 
-    public Long getIdUsuario() { return idUsuario; }
-    public void setIdUsuario(Long idUsuario) { this.idUsuario = idUsuario; }
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
+
+    public String getNome() {
+        return nome;
+    }
 
     public void setNome(String nome) {
         this.nome = nome;
     }
-    public String getNome(){
-        return nome;
-    }
-    public void setEmail(String email){
-        this.email = email;
-    }
-    public String getEmail(){
-        return email;
-    }
-    public void setSenha(String senha){
-        this.senha = senha;
-    }
-    public String getSenha(){
-        return senha;
-    }
-    public void setTelefone(String telefone){
-        this.telefone = telefone;
-    }
-    public String getTelefone(){
+
+    public String getTelefone() {
         return telefone;
     }
-    public void setTipoUsuario(TipoUsuario tipoUsuario){
-        this.tipoUsuario = tipoUsuario;
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
     }
-    public TipoUsuario getTipoUsuario(){
-        return tipoUsuario;
+
+    public TipoUsuarioEnum getTipo() {
+        return tipo;
     }
-}
+
+    public void setTipo(TipoUsuarioEnum tipo) {
+        this.tipo = tipo;
+    }
+
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
+    }
+
+    public LocalDateTime getDataCriacao() {
+        return dataCriacao;
+    }
+
+    public void setDataCriacao(LocalDateTime dataCriacao) {
+        this.dataCriacao = dataCriacao;
+    }
+
+    public LocalDateTime getDataAtualizacao() {
+        return dataAtualizacao;
+    }
+
+    public void setDataAtualizacao(LocalDateTime dataAtualizacao) {
+        this.dataAtualizacao = dataAtualizacao;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + tipo.name()));
+    }
+
+    @Override
+    public String getPassword() {
+        return senha;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return ativo;
+    }
+} 

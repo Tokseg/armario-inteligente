@@ -47,6 +47,7 @@ CREATE TABLE notificacao (
     id_usuario BIGINT,
     mensagem VARCHAR(255),
     data_envio TIMESTAMP,
+    lida BOOLEAN NOT NULL DEFAULT FALSE,
     CONSTRAINT fk_notificacao_usuario FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
 );
 
