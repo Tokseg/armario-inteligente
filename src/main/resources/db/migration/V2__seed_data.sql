@@ -23,8 +23,8 @@ INSERT INTO compartimento (id_armario, ocupado, id_encomenda_atual) VALUES (1, t
 INSERT INTO compartimento (id_armario, ocupado, id_encomenda_atual) VALUES (2, true, 'E002');
 
 -- Notificações
-INSERT INTO notificacao (id_notificacao, id_usuario, mensagem, data_envio) VALUES ('N001', 1, 'Sua encomenda chegou!', CURRENT_TIMESTAMP);
-INSERT INTO notificacao (id_notificacao, id_usuario, mensagem, data_envio) VALUES ('N002', 2, 'Sua encomenda chegou!', CURRENT_TIMESTAMP);
+INSERT INTO notificacao (id_notificacao, id_usuario, mensagem, data_envio, lida) VALUES ('N001', 1, 'Sua encomenda chegou!', CURRENT_TIMESTAMP, false);
+INSERT INTO notificacao (id_notificacao, id_usuario, mensagem, data_envio, lida) VALUES ('N002', 2, 'Sua encomenda chegou!', CURRENT_TIMESTAMP, false);
 
 -- Auditoria
 INSERT INTO registro_auditoria (acao, detalhes, data_hora) VALUES ('Cadastro de Encomenda', 'Encomenda E001 cadastrada para João Silva', CURRENT_TIMESTAMP);

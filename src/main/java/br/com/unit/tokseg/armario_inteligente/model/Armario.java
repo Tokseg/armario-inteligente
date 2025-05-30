@@ -13,6 +13,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.UUID;
 
 /**
  * Entidade que representa um armário inteligente no sistema.
@@ -24,15 +32,19 @@ import jakarta.persistence.Table;
  * - Um armário pode ter vários compartimentos (relacionamento não mapeado nesta classe)
  */
 @Entity
-@Table(name = "Armario")
+@Table(name = "armario")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Armario {
     /**
      * Identificador único do armário.
      * Gerado automaticamente pelo banco de dados.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idArmario;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     /**
      * Número identificador do armário.
@@ -45,6 +57,7 @@ public class Armario {
      * Status atual do armário.
      * Pode ser DISPONIVEL, OCUPADO ou MANUTENCAO.
      */
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ArmarioStatus status;
 
@@ -56,53 +69,27 @@ public class Armario {
     private String localizacao;
 
     /**
-     * Indica se o armário está ocupado.
-     * Este campo é redundante com o status, mas mantido por compatibilidade.
-     */
-    private boolean ocupado;
-
-    /**
      * Encomenda atual no armário, se houver.
      * Relacionamento opcional (nullable = true por padrão).
      */
     @ManyToOne
-    @JoinColumn(name = "idEncomendaAtual", referencedColumnName = "idEncomenda")
+    @JoinColumn(name = "id_encomenda_atual", referencedColumnName = "id_encomenda")
     private Encomenda encomendaAtual;
 
-    /**
-     * Construtor padrão exigido pelo JPA.
-     */
-    public Armario() {}
-
-    /**
-     * Construtor completo para criar um armário com todos os dados.
-     * 
-     * @param numero Número identificador do armário
-     * @param status Status inicial do armário
-     * @param localizacao Localização do armário
-     * @param ocupado Se o armário está ocupado
-     * @param encomendaAtual Encomenda atual, se houver
-     */
-    public Armario(String numero, ArmarioStatus status, String localizacao, boolean ocupado, Encomenda encomendaAtual) {
-        this.numero = numero;
-        this.status = status;
-        this.localizacao = localizacao;
-        this.ocupado = ocupado;
-        this.encomendaAtual = encomendaAtual;
+    public boolean isOcupado() {
+        return status == ArmarioStatus.OCUPADO;
     }
 
     // Getters e Setters
-    public Long getIdArmario() { return idArmario; }
+    public UUID getId() { return id; }
     public String getNumero() { return numero; }
     public ArmarioStatus getStatus() { return status; }
     public String getLocalizacao() { return localizacao; }
-    public boolean isOcupado() { return ocupado; }
     public Encomenda getEncomendaAtual() { return encomendaAtual; }
 
-    public void setIdArmario(Long idArmario) { this.idArmario = idArmario; }
+    public void setId(UUID id) { this.id = id; }
     public void setNumero(String numero) { this.numero = numero; }
     public void setStatus(ArmarioStatus status) { this.status = status; }
     public void setLocalizacao(String localizacao) { this.localizacao = localizacao; }
-    public void setOcupado(boolean ocupado) { this.ocupado = ocupado; }
     public void setEncomendaAtual(Encomenda encomendaAtual) { this.encomendaAtual = encomendaAtual; }
 }

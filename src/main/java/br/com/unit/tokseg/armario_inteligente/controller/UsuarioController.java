@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Controller responsável por gerenciar as operações relacionadas aos usuários do sistema.
@@ -63,7 +64,7 @@ public class UsuarioController {
      * @return Usuário encontrado ou erro 404 se não existir
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Usuario> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<Usuario> buscarPorId(@PathVariable UUID id) {
         return usuarioService.buscarPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -76,9 +77,12 @@ public class UsuarioController {
      * @return ResponseEntity sem conteúdo (204) se removido com sucesso, ou erro 404 se não encontrado
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        return usuarioService.deletar(id)
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.notFound().build();
+    public ResponseEntity<Void> remover(@PathVariable UUID id) {
+        try {
+            usuarioService.remover(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

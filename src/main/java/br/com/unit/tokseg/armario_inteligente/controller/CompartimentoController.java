@@ -1,43 +1,89 @@
 package br.com.unit.tokseg.armario_inteligente.controller;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import br.com.unit.tokseg.armario_inteligente.model.Compartimento;
 import br.com.unit.tokseg.armario_inteligente.service.CompartimentoService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
+/**
+ * Controller responsável por gerenciar as operações relacionadas aos compartimentos dos armários.
+ * Expõe endpoints REST para criar, listar, buscar e remover compartimentos.
+ * 
+ * Endpoints disponíveis:
+ * - GET /api/compartimentos: Lista todos os compartimentos (AUTENTICADO)
+ * - GET /api/compartimentos/{id}: Busca um compartimento específico (AUTENTICADO)
+ * - POST /api/compartimentos: Cria um novo compartimento (ADMIN)
+ * - DELETE /api/compartimentos/{id}: Remove um compartimento (ADMIN)
+ */
 @RestController
 @RequestMapping("/api/compartimentos")
 public class CompartimentoController {
-    @Autowired
-    private CompartimentoService service;
 
+    private final CompartimentoService compartimentoService;
+
+    /**
+     * Construtor que recebe o serviço de compartimentos via injeção de dependência.
+     * 
+     * @param compartimentoService Serviço de compartimentos a ser injetado
+     */
+    public CompartimentoController(CompartimentoService compartimentoService) {
+        this.compartimentoService = compartimentoService;
+    }
+
+    /**
+     * Lista todos os compartimentos cadastrados no sistema.
+     * Requer autenticação.
+     * 
+     * @return Lista de todos os compartimentos
+     */
     @GetMapping
-    public List<Compartimento> getAll() {
-        return service.findAll();
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<Compartimento>> listarTodos() {
+        return ResponseEntity.ok(compartimentoService.findAll());
     }
 
+    /**
+     * Busca um compartimento específico pelo ID.
+     * Requer autenticação.
+     * 
+     * @param id ID do compartimento a ser buscado
+     * @return Compartimento encontrado ou erro 404 se não existir
+     */
     @GetMapping("/{id}")
-    public Optional<Compartimento> getById(@PathVariable Long id) {
-        return service.findById(id);
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Compartimento> buscarPorId(@PathVariable Long id) {
+        return compartimentoService.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
+    /**
+     * Cria um novo compartimento no sistema.
+     * Requer permissão de ADMIN.
+     * 
+     * @param compartimento Dados do compartimento a ser criado
+     * @return Compartimento criado
+     */
     @PostMapping
-    public Compartimento create(@RequestBody Compartimento compartimento) {
-        return service.save(compartimento);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Compartimento> criar(@RequestBody Compartimento compartimento) {
+        return ResponseEntity.ok(compartimentoService.save(compartimento));
     }
 
+    /**
+     * Remove um compartimento do sistema.
+     * Requer permissão de ADMIN.
+     * 
+     * @param id ID do compartimento a ser removido
+     * @return ResponseEntity sem conteúdo (204) se removido com sucesso
+     */
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        service.deleteById(id);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> remover(@PathVariable Long id) {
+        compartimentoService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 } 

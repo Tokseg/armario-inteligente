@@ -2,10 +2,13 @@ package br.com.unit.tokseg.armario_inteligente.service;
 
 import br.com.unit.tokseg.armario_inteligente.model.Usuario;
 import br.com.unit.tokseg.armario_inteligente.repository.UsuarioRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Serviço responsável pela lógica de negócios relacionada aos usuários.
@@ -48,6 +51,7 @@ public class UsuarioService {
      * @param usuario Usuário a ser salvo
      * @return Usuário salvo com ID gerado
      */
+    @Transactional
     public Usuario salvar(Usuario usuario) {
         return usuarioRepository.save(usuario);
     }
@@ -67,7 +71,7 @@ public class UsuarioService {
      * @param id ID do usuário a ser buscado
      * @return Optional contendo o usuário encontrado, ou vazio se não existir
      */
-    public Optional<Usuario> buscarPorId(Long id) {
+    public Optional<Usuario> buscarPorId(UUID id) {
         return usuarioRepository.findById(id);
     }
 
@@ -78,11 +82,11 @@ public class UsuarioService {
      * @param id ID do usuário a ser removido
      * @return true se o usuário foi removido com sucesso, false se não encontrado
      */
-    public boolean deletar(Long id) {
-        if (usuarioRepository.existsById(id)) {
-            usuarioRepository.deleteById(id);
-            return true;
+    @Transactional
+    public void remover(UUID id) {
+        if (!usuarioRepository.existsById(id)) {
+            throw new EntityNotFoundException("Usuário não encontrado com ID: " + id);
         }
-        return false;
+        usuarioRepository.deleteById(id);
     }
 } 
