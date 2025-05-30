@@ -74,7 +74,7 @@ public class RegistroAuditoriaService {
      * @return Optional contendo o registro encontrado, ou vazio se não existir
      * @throws IllegalArgumentException se o ID for nulo
      */
-    public Optional<RegistroAuditoria> buscarPorId(Integer id) {
+    public Optional<RegistroAuditoria> buscarPorId(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("ID do registro não pode ser nulo");
         }
