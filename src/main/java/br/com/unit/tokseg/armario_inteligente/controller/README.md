@@ -1,1 +1,0 @@
-Esta pasta contém as classes controladoras que recebem e respondem às requisições HTTP.

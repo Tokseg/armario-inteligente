@@ -1,25 +1,33 @@
 package br.com.unit.tokseg.armario_inteligente.controller;
 
+import br.com.unit.tokseg.armario_inteligente.exception.ResourceNotFoundException;
 import br.com.unit.tokseg.armario_inteligente.model.Compartimento;
 import br.com.unit.tokseg.armario_inteligente.service.CompartimentoService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
- * Controller responsável por gerenciar as operações relacionadas aos compartimentos dos armários.
- * Expõe endpoints REST para criar, listar, buscar e remover compartimentos.
- * 
- * Endpoints disponíveis:
- * - GET /api/compartimentos: Lista todos os compartimentos (AUTENTICADO)
- * - GET /api/compartimentos/{id}: Busca um compartimento específico (AUTENTICADO)
- * - POST /api/compartimentos: Cria um novo compartimento (ADMIN)
- * - DELETE /api/compartimentos/{id}: Remove um compartimento (ADMIN)
+ * Controller responsável por gerenciar as operações relacionadas aos compartimentos.
+ * Expõe endpoints REST para criar, listar, buscar, atualizar e remover compartimentos.
  */
 @RestController
 @RequestMapping("/api/compartimentos")
+@Tag(name = "Compartimentos", description = "API para gerenciamento de compartimentos")
+@SecurityRequirement(name = "bearerAuth")
 public class CompartimentoController {
 
     private final CompartimentoService compartimentoService;
@@ -33,57 +41,115 @@ public class CompartimentoController {
         this.compartimentoService = compartimentoService;
     }
 
-    /**
-     * Lista todos os compartimentos cadastrados no sistema.
-     * Requer autenticação.
-     * 
-     * @return Lista de todos os compartimentos
-     */
+    @Operation(summary = "Lista todos os compartimentos", description = "Retorna uma lista de todos os compartimentos cadastrados no sistema")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de compartimentos retornada com sucesso",
+            content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = Compartimento.class))),
+        @ApiResponse(responseCode = "401", description = "Não autorizado"),
+        @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     @GetMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<Compartimento>> listarTodos() {
-        return ResponseEntity.ok(compartimentoService.findAll());
+        return ResponseEntity.ok(compartimentoService.listarTodos());
     }
 
-    /**
-     * Busca um compartimento específico pelo ID.
-     * Requer autenticação.
-     * 
-     * @param id ID do compartimento a ser buscado
-     * @return Compartimento encontrado ou erro 404 se não existir
-     */
+    @Operation(summary = "Busca um compartimento por ID", description = "Retorna um compartimento específico baseado no ID fornecido")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Compartimento encontrado com sucesso",
+            content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = Compartimento.class))),
+        @ApiResponse(responseCode = "404", description = "Compartimento não encontrado"),
+        @ApiResponse(responseCode = "401", description = "Não autorizado"),
+        @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Compartimento> buscarPorId(@PathVariable Long id) {
-        return compartimentoService.findById(id)
+    public ResponseEntity<Compartimento> buscarPorId(
+            @Parameter(description = "ID do compartimento a ser buscado", required = true)
+            @PathVariable UUID id) {
+        return compartimentoService.buscarPorId(id)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException("Compartimento", "id", id));
     }
 
-    /**
-     * Cria um novo compartimento no sistema.
-     * Requer permissão de ADMIN.
-     * 
-     * @param compartimento Dados do compartimento a ser criado
-     * @return Compartimento criado
-     */
+    @Operation(summary = "Lista compartimentos por armário", description = "Retorna uma lista de compartimentos de um armário específico")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de compartimentos retornada com sucesso",
+            content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = Compartimento.class))),
+        @ApiResponse(responseCode = "401", description = "Não autorizado"),
+        @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
+    @GetMapping("/armario/{armarioId}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<Compartimento>> buscarPorArmario(
+            @Parameter(description = "ID do armário cujos compartimentos serão listados", required = true)
+            @PathVariable UUID armarioId) {
+        return ResponseEntity.ok(compartimentoService.buscarPorArmario(armarioId));
+    }
+
+    @Operation(summary = "Cria um novo compartimento", description = "Cria um novo compartimento no sistema")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Compartimento criado com sucesso",
+            content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = Compartimento.class))),
+        @ApiResponse(responseCode = "400", description = "Dados inválidos fornecidos"),
+        @ApiResponse(responseCode = "401", description = "Não autorizado"),
+        @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Compartimento> criar(@RequestBody Compartimento compartimento) {
-        return ResponseEntity.ok(compartimentoService.save(compartimento));
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<Compartimento> criar(
+            @Parameter(description = "Dados do compartimento a ser criado", required = true)
+            @Valid @RequestBody Compartimento compartimento) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(compartimentoService.salvar(compartimento));
     }
 
-    /**
-     * Remove um compartimento do sistema.
-     * Requer permissão de ADMIN.
-     * 
-     * @param id ID do compartimento a ser removido
-     * @return ResponseEntity sem conteúdo (204) se removido com sucesso
-     */
+    @Operation(summary = "Atualiza um compartimento", description = "Atualiza os dados de um compartimento existente")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Compartimento atualizado com sucesso",
+            content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = Compartimento.class))),
+        @ApiResponse(responseCode = "400", description = "Dados inválidos fornecidos"),
+        @ApiResponse(responseCode = "404", description = "Compartimento não encontrado"),
+        @ApiResponse(responseCode = "401", description = "Não autorizado"),
+        @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Compartimento> atualizar(
+            @Parameter(description = "ID do compartimento a ser atualizado", required = true)
+            @PathVariable UUID id,
+            @Parameter(description = "Dados do compartimento atualizado", required = true)
+            @Valid @RequestBody Compartimento compartimento) {
+        if (!compartimentoService.existePorId(id)) {
+            throw new ResourceNotFoundException("Compartimento", "id", id);
+        }
+        compartimento.setId(id);
+        return ResponseEntity.ok(compartimentoService.salvar(compartimento));
+    }
+
+    @Operation(summary = "Remove um compartimento", description = "Remove um compartimento do sistema")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Compartimento removido com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Compartimento não encontrado"),
+        @ApiResponse(responseCode = "401", description = "Não autorizado"),
+        @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> remover(@PathVariable Long id) {
-        compartimentoService.deleteById(id);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public ResponseEntity<Void> remover(
+            @Parameter(description = "ID do compartimento a ser removido", required = true)
+            @PathVariable UUID id) {
+        if (!compartimentoService.existePorId(id)) {
+            throw new ResourceNotFoundException("Compartimento", "id", id);
+        }
+        compartimentoService.remover(id);
         return ResponseEntity.noContent().build();
     }
 } 

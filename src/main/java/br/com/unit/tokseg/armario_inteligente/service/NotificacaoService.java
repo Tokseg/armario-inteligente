@@ -8,14 +8,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Serviço responsável pela lógica de negócios relacionada às notificações.
  * Implementa as operações de CRUD e regras específicas do domínio.
  */
 @Service
+@Transactional
 public class NotificacaoService {
 
     private static final Logger logger = LoggerFactory.getLogger(NotificacaoService.class);
@@ -36,19 +39,24 @@ public class NotificacaoService {
      * @return Notificação salva com ID gerado
      * @throws IllegalArgumentException se a notificação for nula ou inválida
      */
-    @Transactional
     public Notificacao salvar(Notificacao notificacao) {
         if (notificacao == null) {
             throw new IllegalArgumentException("Notificação não pode ser nula");
         }
+        if (notificacao.getTitulo() == null || notificacao.getTitulo().trim().isEmpty()) {
+            throw new IllegalArgumentException("Título da notificação não pode ser nulo ou vazio");
+        }
         if (notificacao.getMensagem() == null || notificacao.getMensagem().trim().isEmpty()) {
             throw new IllegalArgumentException("Mensagem da notificação não pode ser nula ou vazia");
+        }
+        if (notificacao.getTipoNotificacao() == null) {
+            throw new IllegalArgumentException("Tipo da notificação não pode ser nulo");
         }
         if (notificacao.getUsuario() == null) {
             throw new IllegalArgumentException("Usuário da notificação não pode ser nulo");
         }
 
-        logger.info("Salvando nova notificação para o usuário: {}", notificacao.getUsuario().getId());
+        logger.info("Salvando nova notificação com título: {}", notificacao.getTitulo());
         return notificacaoRepository.save(notificacao);
     }
 
@@ -69,33 +77,12 @@ public class NotificacaoService {
      * @return Optional contendo a notificação encontrada, ou vazio se não existir
      * @throws IllegalArgumentException se o ID for nulo
      */
-    public Optional<Notificacao> buscarPorId(String id) {
+    public Optional<Notificacao> buscarPorId(UUID id) {
         if (id == null) {
             throw new IllegalArgumentException("ID da notificação não pode ser nulo");
         }
         logger.debug("Buscando notificação com ID: {}", id);
         return notificacaoRepository.findById(id);
-    }
-
-    /**
-     * Marca uma notificação como lida.
-     * 
-     * @param id ID da notificação a ser marcada como lida
-     * @return Optional contendo a notificação atualizada, ou vazio se não encontrada
-     * @throws IllegalArgumentException se o ID for nulo
-     */
-    @Transactional
-    public Optional<Notificacao> marcarComoLida(String id) {
-        if (id == null) {
-            throw new IllegalArgumentException("ID da notificação não pode ser nulo");
-        }
-
-        logger.info("Marcando notificação como lida: {}", id);
-        return notificacaoRepository.findById(id)
-                .map(notificacao -> {
-                    notificacao.setLida(true);
-                    return notificacaoRepository.save(notificacao);
-                });
     }
 
     /**
@@ -105,8 +92,7 @@ public class NotificacaoService {
      * @throws IllegalArgumentException se o ID for nulo
      * @throws EntityNotFoundException se a notificação não for encontrada
      */
-    @Transactional
-    public void remover(String id) {
+    public void remover(UUID id) {
         if (id == null) {
             throw new IllegalArgumentException("ID da notificação não pode ser nulo");
         }
@@ -117,5 +103,50 @@ public class NotificacaoService {
 
         logger.info("Removendo notificação com ID: {}", id);
         notificacaoRepository.deleteById(id);
+    }
+
+    /**
+     * Busca notificações de um usuário específico.
+     * 
+     * @param usuarioId ID do usuário cujas notificações serão buscadas
+     * @return Lista de notificações do usuário
+     */
+    public List<Notificacao> buscarPorUsuario(UUID usuarioId) {
+        return notificacaoRepository.findByUsuarioId(usuarioId);
+    }
+
+    /**
+     * Busca notificações não lidas de um usuário específico.
+     * 
+     * @param usuarioId ID do usuário cujas notificações serão buscadas
+     * @return Lista de notificações não lidas do usuário
+     */
+    public List<Notificacao> buscarNaoLidasPorUsuario(UUID usuarioId) {
+        return notificacaoRepository.findByUsuarioIdAndLidaFalse(usuarioId);
+    }
+
+    /**
+     * Marca uma notificação como lida.
+     * 
+     * @param id ID da notificação a ser marcada como lida
+     * @return Optional contendo a notificação atualizada, ou vazio se não existir
+     */
+    public Optional<Notificacao> marcarComoLida(UUID id) {
+        return notificacaoRepository.findById(id)
+                .map(notificacao -> {
+                    notificacao.setLida(true);
+                    notificacao.setDataLeitura(LocalDateTime.now());
+                    return notificacaoRepository.save(notificacao);
+                });
+    }
+
+    /**
+     * Verifica se uma notificação existe pelo ID.
+     * 
+     * @param id ID da notificação a ser verificada
+     * @return true se a notificação existir, false caso contrário
+     */
+    public boolean existePorId(UUID id) {
+        return notificacaoRepository.existsById(id);
     }
 } 

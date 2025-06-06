@@ -2,11 +2,17 @@ package br.com.unit.tokseg.armario_inteligente.controller;
 
 import br.com.unit.tokseg.armario_inteligente.model.RegistroAuditoria;
 import br.com.unit.tokseg.armario_inteligente.service.RegistroAuditoriaService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Controller responsável por gerenciar as operações relacionadas aos registros de auditoria.
@@ -22,6 +28,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/auditoria")
+@Tag(name = "Auditoria", description = "API para gerenciamento de registros de auditoria")
 @PreAuthorize("hasRole('ADMIN')")
 public class RegistroAuditoriaController {
 
@@ -35,37 +42,44 @@ public class RegistroAuditoriaController {
         this.registroAuditoriaService = registroAuditoriaService;
     }
 
-    /**
-     * Lista todos os registros de auditoria cadastrados no sistema.
-     * 
-     * @return Lista de todos os registros
-     */
+    @Operation(summary = "Lista todos os registros de auditoria", description = "Retorna uma lista de todos os registros de auditoria cadastrados no sistema")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de registros retornada com sucesso"),
+        @ApiResponse(responseCode = "401", description = "Não autorizado"),
+        @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     @GetMapping
     public ResponseEntity<List<RegistroAuditoria>> listarTodos() {
         return ResponseEntity.ok(registroAuditoriaService.listarTodos());
     }
 
-    /**
-     * Busca um registro específico pelo ID.
-     * 
-     * @param id ID do registro a ser buscado
-     * @return Registro encontrado ou erro 404 se não existir
-     */
+    @Operation(summary = "Busca um registro de auditoria por ID", description = "Retorna um registro específico baseado no ID fornecido")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Registro encontrado com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Registro não encontrado"),
+        @ApiResponse(responseCode = "401", description = "Não autorizado"),
+        @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     @GetMapping("/{id}")
-    public ResponseEntity<RegistroAuditoria> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<RegistroAuditoria> buscarPorId(
+            @Parameter(description = "ID do registro a ser buscado", required = true)
+            @PathVariable UUID id) {
         return registroAuditoriaService.buscarPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    /**
-     * Cria um novo registro de auditoria no sistema.
-     * 
-     * @param registro Dados do registro a ser criado
-     * @return Registro criado ou erro 400 se os dados forem inválidos
-     */
+    @Operation(summary = "Cria um novo registro de auditoria", description = "Cria um novo registro de auditoria no sistema")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Registro criado com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Dados inválidos fornecidos"),
+        @ApiResponse(responseCode = "401", description = "Não autorizado"),
+        @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     @PostMapping
-    public ResponseEntity<RegistroAuditoria> criar(@RequestBody RegistroAuditoria registro) {
+    public ResponseEntity<RegistroAuditoria> criar(
+            @Parameter(description = "Dados do registro a ser criado", required = true)
+            @RequestBody RegistroAuditoria registro) {
         try {
             return ResponseEntity.ok(registroAuditoriaService.salvar(registro));
         } catch (IllegalArgumentException e) {
@@ -73,14 +87,17 @@ public class RegistroAuditoriaController {
         }
     }
 
-    /**
-     * Remove um registro de auditoria do sistema.
-     * 
-     * @param id ID do registro a ser removido
-     * @return ResponseEntity sem conteúdo (204) se removido com sucesso, ou erro 404 se não encontrado
-     */
+    @Operation(summary = "Remove um registro de auditoria", description = "Remove um registro de auditoria do sistema")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Registro removido com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Registro não encontrado"),
+        @ApiResponse(responseCode = "401", description = "Não autorizado"),
+        @ApiResponse(responseCode = "403", description = "Acesso negado")
+    })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> remover(@PathVariable Long id) {
+    public ResponseEntity<Void> remover(
+            @Parameter(description = "ID do registro a ser removido", required = true)
+            @PathVariable UUID id) {
         try {
             registroAuditoriaService.remover(id);
             return ResponseEntity.noContent().build();

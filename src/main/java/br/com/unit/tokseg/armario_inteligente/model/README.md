@@ -1,1 +1,0 @@
-Esta pasta contém as entidades do código.

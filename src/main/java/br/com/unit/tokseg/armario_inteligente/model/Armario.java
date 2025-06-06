@@ -15,10 +15,10 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
 
@@ -34,9 +34,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "armario")
 @Data
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
 public class Armario {
     /**
      * Identificador único do armário.
@@ -50,6 +48,7 @@ public class Armario {
      * Número identificador do armário.
      * Deve ser único no sistema.
      */
+    @NotBlank(message = "Número do armário é obrigatório")
     @Column(nullable = false, unique = true)
     private String numero;
 
@@ -57,6 +56,7 @@ public class Armario {
      * Status atual do armário.
      * Pode ser DISPONIVEL, OCUPADO ou MANUTENCAO.
      */
+    @NotNull(message = "Status do armário é obrigatório")
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ArmarioStatus status;
@@ -65,6 +65,7 @@ public class Armario {
      * Localização física do armário.
      * Exemplo: "Bloco A, 1º andar"
      */
+    @NotBlank(message = "Localização é obrigatória")
     @Column(nullable = false)
     private String localizacao;
 
@@ -73,23 +74,40 @@ public class Armario {
      * Relacionamento opcional (nullable = true por padrão).
      */
     @ManyToOne
-    @JoinColumn(name = "id_encomenda_atual", referencedColumnName = "id_encomenda")
+    @JoinColumn(name = "id_encomenda_atual", referencedColumnName = "id")
     private Encomenda encomendaAtual;
 
+    /**
+     * Observações sobre o armário.
+     * Campo opcional para informações adicionais.
+     */
+    @Column(length = 500)
+    private String observacoes;
+
+    /**
+     * Verifica se o armário está ocupado.
+     * 
+     * @return true se o armário estiver ocupado, false caso contrário
+     */
     public boolean isOcupado() {
         return status == ArmarioStatus.OCUPADO;
     }
 
-    // Getters e Setters
-    public UUID getId() { return id; }
-    public String getNumero() { return numero; }
-    public ArmarioStatus getStatus() { return status; }
-    public String getLocalizacao() { return localizacao; }
-    public Encomenda getEncomendaAtual() { return encomendaAtual; }
+    /**
+     * Verifica se o armário está em manutenção.
+     * 
+     * @return true se o armário estiver em manutenção, false caso contrário
+     */
+    public boolean isEmManutencao() {
+        return status == ArmarioStatus.MANUTENCAO;
+    }
 
-    public void setId(UUID id) { this.id = id; }
-    public void setNumero(String numero) { this.numero = numero; }
-    public void setStatus(ArmarioStatus status) { this.status = status; }
-    public void setLocalizacao(String localizacao) { this.localizacao = localizacao; }
-    public void setEncomendaAtual(Encomenda encomendaAtual) { this.encomendaAtual = encomendaAtual; }
+    /**
+     * Verifica se o armário está disponível.
+     * 
+     * @return true se o armário estiver disponível, false caso contrário
+     */
+    public boolean isDisponivel() {
+        return status == ArmarioStatus.DISPONIVEL;
+    }
 }

@@ -8,14 +8,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Serviço responsável pela lógica de negócios relacionada às encomendas.
  * Implementa as operações de CRUD e regras específicas do domínio.
  */
 @Service
+@Transactional
 public class EncomendaService {
 
     private static final Logger logger = LoggerFactory.getLogger(EncomendaService.class);
@@ -36,13 +39,12 @@ public class EncomendaService {
      * @return Encomenda salva com ID gerado
      * @throws IllegalArgumentException se a encomenda for nula ou inválida
      */
-    @Transactional
     public Encomenda salvar(Encomenda encomenda) {
         if (encomenda == null) {
             throw new IllegalArgumentException("Encomenda não pode ser nula");
         }
-        if (encomenda.getIdEncomenda() == null || encomenda.getIdEncomenda().trim().isEmpty()) {
-            throw new IllegalArgumentException("ID da encomenda não pode ser nulo ou vazio");
+        if (encomenda.getCodigoRastreio() == null || encomenda.getCodigoRastreio().trim().isEmpty()) {
+            throw new IllegalArgumentException("Código de rastreio não pode ser nulo ou vazio");
         }
         if (encomenda.getDescricao() == null || encomenda.getDescricao().trim().isEmpty()) {
             throw new IllegalArgumentException("Descrição da encomenda não pode ser nula ou vazia");
@@ -50,8 +52,21 @@ public class EncomendaService {
         if (encomenda.getRemetente() == null || encomenda.getRemetente().trim().isEmpty()) {
             throw new IllegalArgumentException("Remetente não pode ser nulo ou vazio");
         }
+        if (encomenda.getDataRecebimento() == null) {
+            throw new IllegalArgumentException("Data de recebimento não pode ser nula");
+        }
+        if (encomenda.getArmario() == null) {
+            throw new IllegalArgumentException("Armário não pode ser nulo");
+        }
+        if (encomenda.getUsuario() == null) {
+            throw new IllegalArgumentException("Usuário não pode ser nulo");
+        }
 
-        logger.info("Salvando nova encomenda com ID: {}", encomenda.getIdEncomenda());
+        if (encomendaRepository.existsByCodigoRastreio(encomenda.getCodigoRastreio())) {
+            throw new IllegalArgumentException("Já existe uma encomenda com este código de rastreio");
+        }
+
+        logger.info("Salvando nova encomenda com código de rastreio: {}", encomenda.getCodigoRastreio());
         return encomendaRepository.save(encomenda);
     }
 
@@ -70,11 +85,11 @@ public class EncomendaService {
      * 
      * @param id ID da encomenda a ser buscada
      * @return Optional contendo a encomenda encontrada, ou vazio se não existir
-     * @throws IllegalArgumentException se o ID for nulo ou vazio
+     * @throws IllegalArgumentException se o ID for nulo
      */
-    public Optional<Encomenda> buscarPorId(String id) {
-        if (id == null || id.trim().isEmpty()) {
-            throw new IllegalArgumentException("ID da encomenda não pode ser nulo ou vazio");
+    public Optional<Encomenda> buscarPorId(UUID id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID da encomenda não pode ser nulo");
         }
         logger.debug("Buscando encomenda com ID: {}", id);
         return encomendaRepository.findById(id);
@@ -84,13 +99,12 @@ public class EncomendaService {
      * Remove uma encomenda do sistema.
      * 
      * @param id ID da encomenda a ser removida
-     * @throws IllegalArgumentException se o ID for nulo ou vazio
+     * @throws IllegalArgumentException se o ID for nulo
      * @throws EntityNotFoundException se a encomenda não for encontrada
      */
-    @Transactional
-    public void remover(String id) {
-        if (id == null || id.trim().isEmpty()) {
-            throw new IllegalArgumentException("ID da encomenda não pode ser nulo ou vazio");
+    public void remover(UUID id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID da encomenda não pode ser nulo");
         }
         
         if (!encomendaRepository.existsById(id)) {
@@ -99,5 +113,50 @@ public class EncomendaService {
 
         logger.info("Removendo encomenda com ID: {}", id);
         encomendaRepository.deleteById(id);
+    }
+
+    /**
+     * Busca encomendas de um usuário específico.
+     * 
+     * @param usuarioId ID do usuário cujas encomendas serão buscadas
+     * @return Lista de encomendas do usuário
+     */
+    public List<Encomenda> buscarPorUsuario(UUID usuarioId) {
+        return encomendaRepository.findByUsuarioId(usuarioId);
+    }
+
+    /**
+     * Busca encomendas de um armário específico.
+     * 
+     * @param armarioId ID do armário cujas encomendas serão buscadas
+     * @return Lista de encomendas do armário
+     */
+    public List<Encomenda> buscarPorArmario(UUID armarioId) {
+        return encomendaRepository.findByArmarioId(armarioId);
+    }
+
+    /**
+     * Confirma a retirada de uma encomenda.
+     * 
+     * @param id ID da encomenda a ser confirmada
+     * @return Optional contendo a encomenda atualizada, ou vazio se não existir
+     */
+    public Optional<Encomenda> confirmarRetirada(UUID id) {
+        return encomendaRepository.findById(id)
+                .map(encomenda -> {
+                    encomenda.setRetiradaConfirmada(true);
+                    encomenda.setDataRetirada(LocalDateTime.now());
+                    return encomendaRepository.save(encomenda);
+                });
+    }
+
+    /**
+     * Verifica se uma encomenda existe pelo ID.
+     * 
+     * @param id ID da encomenda a ser verificada
+     * @return true se a encomenda existir, false caso contrário
+     */
+    public boolean existePorId(UUID id) {
+        return encomendaRepository.existsById(id);
     }
 } 

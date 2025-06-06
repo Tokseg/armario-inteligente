@@ -17,6 +17,7 @@ import java.util.UUID;
  * Implementa as operações de CRUD e regras específicas do domínio.
  */
 @Service
+@Transactional
 public class CompartimentoService {
 
     private static final Logger logger = LoggerFactory.getLogger(CompartimentoService.class);
@@ -35,6 +36,7 @@ public class CompartimentoService {
      * 
      * @return Lista de todos os compartimentos
      */
+    @Transactional(readOnly = true)
     public List<Compartimento> listarTodos() {
         logger.debug("Listando todos os compartimentos");
         return compartimentoRepository.findAll();
@@ -47,6 +49,7 @@ public class CompartimentoService {
      * @return Optional contendo o compartimento encontrado, ou vazio se não existir
      * @throws IllegalArgumentException se o ID for nulo
      */
+    @Transactional(readOnly = true)
     public Optional<Compartimento> buscarPorId(UUID id) {
         if (id == null) {
             throw new IllegalArgumentException("ID do compartimento não pode ser nulo");
@@ -56,13 +59,42 @@ public class CompartimentoService {
     }
 
     /**
+     * Busca compartimentos por armário.
+     *
+     * @param armarioId ID do armário
+     * @return Lista de compartimentos do armário
+     */
+    @Transactional(readOnly = true)
+    public List<Compartimento> buscarPorArmario(UUID armarioId) {
+        if (armarioId == null) {
+            throw new IllegalArgumentException("ID do armário não pode ser nulo");
+        }
+        logger.debug("Buscando compartimentos do armário: {}", armarioId);
+        return compartimentoRepository.findByArmarioId(armarioId);
+    }
+
+    /**
+     * Verifica se um compartimento existe pelo ID.
+     *
+     * @param id ID do compartimento
+     * @return true se o compartimento existe, false caso contrário
+     */
+    @Transactional(readOnly = true)
+    public boolean existePorId(UUID id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID do compartimento não pode ser nulo");
+        }
+        logger.debug("Verificando existência do compartimento com ID: {}", id);
+        return compartimentoRepository.existsById(id);
+    }
+
+    /**
      * Salva um novo compartimento no sistema.
      * 
      * @param compartimento Compartimento a ser salvo
      * @return Compartimento salvo com ID gerado
      * @throws IllegalArgumentException se o compartimento for nulo ou inválido
      */
-    @Transactional
     public Compartimento salvar(Compartimento compartimento) {
         if (compartimento == null) {
             throw new IllegalArgumentException("Compartimento não pode ser nulo");
@@ -80,18 +112,15 @@ public class CompartimentoService {
      * 
      * @param id ID do compartimento a ser removido
      * @throws IllegalArgumentException se o ID for nulo
-     * @throws EntityNotFoundException se o compartimento não for encontrado
+     * @throws br.com.unit.tokseg.armario_inteligente.exception.ResourceNotFoundException se o compartimento não for encontrado
      */
-    @Transactional
     public void remover(UUID id) {
         if (id == null) {
             throw new IllegalArgumentException("ID do compartimento não pode ser nulo");
         }
-        
         if (!compartimentoRepository.existsById(id)) {
-            throw new EntityNotFoundException("Compartimento não encontrado com ID: " + id);
+            throw new br.com.unit.tokseg.armario_inteligente.exception.ResourceNotFoundException("Compartimento", "id", id);
         }
-
         logger.info("Removendo compartimento com ID: {}", id);
         compartimentoRepository.deleteById(id);
     }

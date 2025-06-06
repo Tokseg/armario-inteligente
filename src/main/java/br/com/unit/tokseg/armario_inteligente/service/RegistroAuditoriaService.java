@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Serviço responsável pela lógica de negócios relacionada aos registros de auditoria.
@@ -21,6 +22,7 @@ import java.util.Optional;
  * - Fornecer uma interface limpa para consulta de registros
  */
 @Service
+@Transactional
 public class RegistroAuditoriaService {
 
     private static final Logger logger = LoggerFactory.getLogger(RegistroAuditoriaService.class);
@@ -62,6 +64,7 @@ public class RegistroAuditoriaService {
      * 
      * @return Lista de todos os registros
      */
+    @Transactional(readOnly = true)
     public List<RegistroAuditoria> listarTodos() {
         logger.debug("Listando todos os registros de auditoria");
         return registroAuditoriaRepository.findAll();
@@ -74,7 +77,8 @@ public class RegistroAuditoriaService {
      * @return Optional contendo o registro encontrado, ou vazio se não existir
      * @throws IllegalArgumentException se o ID for nulo
      */
-    public Optional<RegistroAuditoria> buscarPorId(Long id) {
+    @Transactional(readOnly = true)
+    public Optional<RegistroAuditoria> buscarPorId(UUID id) {
         if (id == null) {
             throw new IllegalArgumentException("ID do registro não pode ser nulo");
         }
@@ -90,7 +94,7 @@ public class RegistroAuditoriaService {
      * @throws EntityNotFoundException se o registro não for encontrado
      */
     @Transactional
-    public void remover(Integer id) {
+    public void remover(UUID id) {
         if (id == null) {
             throw new IllegalArgumentException("ID do registro não pode ser nulo");
         }
