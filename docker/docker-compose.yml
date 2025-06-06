@@ -33,6 +33,19 @@ services:
     networks:
       - armario-network
 
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: armario_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: seu_email@exemplo.com
+      PGADMIN_DEFAULT_PASSWORD: sua_senha_pgadmin
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+    networks:
+      - armario-network
+
 volumes:
   pgdata:
 
