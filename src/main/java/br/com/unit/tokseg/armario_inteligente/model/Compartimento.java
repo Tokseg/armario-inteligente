@@ -7,13 +7,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.util.UUID;
 
 @Entity
 @Table(name = "Compartimento")
 public class Compartimento {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idCompartimento;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID idCompartimento;
 
     @ManyToOne
     @JoinColumn(name = "idArmario", referencedColumnName = "idArmario")
@@ -33,12 +34,35 @@ public class Compartimento {
         this.encomendaAtual = encomendaAtual;
     }
 
-    public Long getIdCompartimento() { return idCompartimento; }
-    public Armario getArmario() { return armario; }
-    public boolean isOcupado() { return ocupado; }
-    public Encomenda getEncomendaAtual() { return encomendaAtual; }
-    public void setIdCompartimento(Long idCompartimento) { this.idCompartimento = idCompartimento; }
-    public void setArmario(Armario armario) { this.armario = armario; }
-    public void setOcupado(boolean ocupado) { this.ocupado = ocupado; }
-    public void setEncomendaAtual(Encomenda encomendaAtual) { this.encomendaAtual = encomendaAtual; }
-} 
+    public UUID getIdCompartimento() {
+        return idCompartimento;
+    }
+
+    public Armario getArmario() {
+        return armario;
+    }
+
+    public boolean isOcupado() {
+        return ocupado;
+    }
+
+    public Encomenda getEncomendaAtual() {
+        return encomendaAtual;
+    }
+
+    public void setIdCompartimento(UUID idCompartimento) {
+        this.idCompartimento = idCompartimento;
+    }
+
+    public void setArmario(Armario armario) {
+        this.armario = armario;
+    }
+
+    public void setOcupado(boolean ocupado) {
+        this.ocupado = ocupado;
+    }
+
+    public void setEncomendaAtual(Encomenda encomendaAtual) {
+        this.encomendaAtual = encomendaAtual;
+    }
+}
