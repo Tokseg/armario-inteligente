@@ -12,13 +12,12 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Serviço responsável pela lógica de negócios relacionada aos registros de auditoria.
- * Implementa as operações de CRUD e regras específicas do domínio.
+ * Serviço responsável pela lógica de negócios relacionada aos registros de auditoria. Implementa as
+ * operações de CRUD e regras específicas do domínio.
  * 
- * Este serviço é responsável por:
- * - Registrar todas as ações importantes no sistema
- * - Manter um histórico de operações para fins de auditoria
- * - Fornecer uma interface limpa para consulta de registros
+ * Este serviço é responsável por: - Registrar todas as ações importantes no sistema - Manter um
+ * histórico de operações para fins de auditoria - Fornecer uma interface limpa para consulta de
+ * registros
  */
 @Service
 public class RegistroAuditoriaService {
@@ -28,6 +27,7 @@ public class RegistroAuditoriaService {
 
     /**
      * Construtor explícito para inicializar o repositório de registros de auditoria.
+     * 
      * @param registroAuditoriaRepository Repositório de registros de auditoria a ser injetado
      */
     public RegistroAuditoriaService(RegistroAuditoriaRepository registroAuditoriaRepository) {
@@ -74,7 +74,7 @@ public class RegistroAuditoriaService {
      * @return Optional contendo o registro encontrado, ou vazio se não existir
      * @throws IllegalArgumentException se o ID for nulo
      */
-    public Optional<RegistroAuditoria> buscarPorId(Long id) {
+    public Optional<RegistroAuditoria> buscarPorId(Integer id) {
         if (id == null) {
             throw new IllegalArgumentException("ID do registro não pode ser nulo");
         }
@@ -102,4 +102,4 @@ public class RegistroAuditoriaService {
         logger.info("Removendo registro de auditoria com ID: {}", id);
         registroAuditoriaRepository.deleteById(id);
     }
-} 
+}
