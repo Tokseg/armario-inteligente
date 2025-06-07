@@ -6,16 +6,17 @@ services:
     ports:
       - '8080:8080'
     environment:
-      # Variáveis de ambiente que o Spring Boot vai ler
-      SPRING_DATASOURCE_URL: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+      # Variáveis de ambiente que o Spring Boot vai ler      SPRING_DATASOURCE_URL: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
       SPRING_DATASOURCE_USERNAME: ${DB_USER}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       SPRING_PROFILES_ACTIVE: docker
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      SPRING_FLYWAY_ENABLED: 'true'
+      SPRING_FLYWAY_BASELINE_ON_MIGRATE: 'true'
     depends_on:
       - db
     networks:
       - app-network
-
   # Serviço do Banco de Dados PostgreSQL
   db:
     image: postgres:15-alpine
@@ -23,6 +24,7 @@ services:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
       - db_data:/var/lib/postgresql/data
     ports:
@@ -30,10 +32,12 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U ${DB_USER}']
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USER} -d ${DB_NAME}']
       interval: 5s
       timeout: 5s
       retries: 5
+    command:
+      ['postgres', '-c', 'max_connections=100', '-c', 'shared_buffers=256MB']
 
   # Serviço do PgAdmin
   pgadmin:
