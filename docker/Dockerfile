@@ -1,20 +1,21 @@
-FROM eclipse-temurin:17-jdk-alpine
+FROM maven:3.8.4-openjdk-17 as build-image
+WORKDIR /app/source
 
-WORKDIR /app
+# Copiar apenas o pom.xml primeiro
+COPY ./pom.xml .
+COPY ./mvnw .
+COPY ./.mvn ./.mvn
 
-# Copiar apenas os arquivos necessários
-COPY pom.xml .
-COPY mvnw .
-COPY .mvn .mvn
-COPY src src
+# Baixar todas as dependências
+RUN mvn dependency:go-offline
 
-# Instalar Maven e compilar a aplicação
-RUN apk add --no-cache maven && \
-    chmod +x mvnw && \
-    ./mvnw clean package -DskipTests
+# Agora copiar o código fonte
+COPY ./src ./src
 
-# Expor a porta da aplicação
+# Fazer o build
+RUN mvn clean package -DskipTests
+
+FROM eclipse-temurin:17-jre-alpine
+COPY --from=build-image /app/source/target/*.jar /app/api.jar
 EXPOSE 8080
-
-# Comando para executar a aplicação
-CMD ["java", "-jar", "target/armario-inteligente-0.0.1-SNAPSHOT.jar", "--spring.profiles.active=docker"] 
+ENTRYPOINT ["java", "-jar", "/app/api.jar"]
