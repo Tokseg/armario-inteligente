@@ -6,7 +6,8 @@ services:
     ports:
       - '8080:8080'
     environment:
-      # Variáveis de ambiente que o Spring Boot vai ler      SPRING_DATASOURCE_URL: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+      # Variáveis de ambiente que o Spring Boot vai ler  
+      SPRING_DATASOURCE_URL: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
       SPRING_DATASOURCE_USERNAME: ${DB_USER}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       SPRING_PROFILES_ACTIVE: docker
