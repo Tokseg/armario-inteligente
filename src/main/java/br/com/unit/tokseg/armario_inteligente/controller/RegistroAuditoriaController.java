@@ -9,14 +9,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * Controller responsável por gerenciar as operações relacionadas aos registros de auditoria.
- * Expõe endpoints REST para criar, listar, buscar e remover registros.
+ * Controller responsável por gerenciar as operações relacionadas aos registros de auditoria. Expõe
+ * endpoints REST para criar, listar, buscar e remover registros.
  * 
- * Endpoints disponíveis:
- * - GET /api/auditoria: Lista todos os registros
- * - GET /api/auditoria/{id}: Busca um registro específico
- * - POST /api/auditoria: Cria um novo registro
- * - DELETE /api/auditoria/{id}: Remove um registro
+ * Endpoints disponíveis: - GET /api/auditoria: Lista todos os registros - GET /api/auditoria/{id}:
+ * Busca um registro específico - POST /api/auditoria: Cria um novo registro - DELETE
+ * /api/auditoria/{id}: Remove um registro
  * 
  * Todos os endpoints requerem autenticação e autorização adequada.
  */
@@ -28,8 +26,8 @@ public class RegistroAuditoriaController {
     private final RegistroAuditoriaService registroAuditoriaService;
 
     /**
-     * Construtor que recebe o serviço de registros de auditoria via injeção de dependência.
-     * O Spring Boot gerencia automaticamente a criação e injeção do serviço.
+     * Construtor que recebe o serviço de registros de auditoria via injeção de dependência. O
+     * Spring Boot gerencia automaticamente a criação e injeção do serviço.
      */
     public RegistroAuditoriaController(RegistroAuditoriaService registroAuditoriaService) {
         this.registroAuditoriaService = registroAuditoriaService;
@@ -52,9 +50,8 @@ public class RegistroAuditoriaController {
      * @return Registro encontrado ou erro 404 se não existir
      */
     @GetMapping("/{id}")
-    public ResponseEntity<RegistroAuditoria> buscarPorId(@PathVariable Long id) {
-        return registroAuditoriaService.buscarPorId(id)
-                .map(ResponseEntity::ok)
+    public ResponseEntity<RegistroAuditoria> buscarPorId(@PathVariable Integer id) {
+        return registroAuditoriaService.buscarPorId(id).map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -77,10 +74,11 @@ public class RegistroAuditoriaController {
      * Remove um registro de auditoria do sistema.
      * 
      * @param id ID do registro a ser removido
-     * @return ResponseEntity sem conteúdo (204) se removido com sucesso, ou erro 404 se não encontrado
+     * @return ResponseEntity sem conteúdo (204) se removido com sucesso, ou erro 404 se não
+     *         encontrado
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> remover(@PathVariable Long id) {
+    public ResponseEntity<Void> remover(@PathVariable Integer id) {
         try {
             registroAuditoriaService.remover(id);
             return ResponseEntity.noContent().build();
