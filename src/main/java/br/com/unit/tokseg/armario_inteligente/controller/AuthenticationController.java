@@ -3,6 +3,7 @@ package br.com.unit.tokseg.armario_inteligente.controller;
 import br.com.unit.tokseg.armario_inteligente.dto.AuthenticationRequest;
 import br.com.unit.tokseg.armario_inteligente.dto.AuthenticationResponse;
 import br.com.unit.tokseg.armario_inteligente.dto.RegisterRequest;
+import br.com.unit.tokseg.armario_inteligente.model.TipoUsuarioEnum;
 import br.com.unit.tokseg.armario_inteligente.service.AuthenticationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,14 +36,20 @@ public class AuthenticationController {
 
     /**
      * Registra um novo usuário no sistema.
+     * O tipo de usuário (ADMIN, PORTEIRO, MORADOR) deve ser especificado na requisição.
+     * Se não for especificado, o tipo padrão será MORADOR.
      * 
-     * @param request Dados do usuário a ser registrado
+     * @param request Dados do usuário a ser registrado, incluindo o tipo (opcional)
      * @return Resposta contendo o token JWT gerado
      */
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(
             @RequestBody RegisterRequest request
     ) {
+        // Se o tipo não for especificado, define como MORADOR por padrão
+        if (request.getTipo() == null) {
+            request.setTipo(TipoUsuarioEnum.MORADOR);
+        }
         return ResponseEntity.ok(authenticationService.register(request));
     }
 
