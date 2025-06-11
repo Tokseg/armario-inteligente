@@ -6,16 +6,16 @@ import br.com.unit.tokseg.armario_inteligente.dto.RegisterRequest;
 import br.com.unit.tokseg.armario_inteligente.model.Usuario;
 import br.com.unit.tokseg.armario_inteligente.model.TipoUsuarioEnum;
 import br.com.unit.tokseg.armario_inteligente.repository.UsuarioRepository;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-
-import java.util.Optional;
 
 /**
  * Serviço responsável por gerenciar a autenticação e registro de usuários.
@@ -130,7 +130,7 @@ public class AuthenticationService {
             response.setToken(jwtToken);
             return response;
 
-        } catch (Exception e) {
+        } catch (AuthenticationException e) {
             logger.error("Falha na autenticação do usuário: {}", request.getEmail(), e);
             throw new IllegalArgumentException("Credenciais inválidas");
         }

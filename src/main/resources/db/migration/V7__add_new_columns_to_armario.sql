@@ -19,6 +19,6 @@ ALTER TABLE armario ALTER COLUMN localizacao SET NOT NULL;
 ALTER TABLE armario ALTER COLUMN numero SET NOT NULL;
 ALTER TABLE armario ALTER COLUMN status SET NOT NULL;
 
--- Adiciona a constraint de check para status
+-- Adiciona a constraint de check para status (convertendo status para inteiro antes de comparar)
 ALTER TABLE armario
-    ADD CONSTRAINT CK_armario_status CHECK (status BETWEEN 0 AND 2); 
+    ADD CONSTRAINT CK_armario_status CHECK (CAST(status AS INTEGER) BETWEEN 0 AND 2); 
