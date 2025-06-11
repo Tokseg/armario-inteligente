@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Serviço responsável pela geração, validação e manipulação de tokens JWT.
@@ -70,7 +71,11 @@ public class JwtService {
      */
     public String generateToken(UserDetails userDetails) {
         logger.info("Gerando token para usuário: {}", userDetails.getUsername());
-        return generateToken(new HashMap<>(), userDetails);
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("authorities", userDetails.getAuthorities().stream()
+                .map(authority -> authority.getAuthority())
+                .collect(Collectors.toList()));
+        return generateToken(claims, userDetails);
     }
 
     /**
