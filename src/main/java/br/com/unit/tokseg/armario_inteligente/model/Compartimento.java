@@ -17,13 +17,13 @@ public class Compartimento {
     private UUID idCompartimento;
 
     @ManyToOne
-    @JoinColumn(name = "idArmario", referencedColumnName = "idArmario")
+    @JoinColumn(name = "armario_id", referencedColumnName = "id")
     private Armario armario;
 
     private boolean ocupado;
 
     @ManyToOne
-    @JoinColumn(name = "idEncomendaAtual", referencedColumnName = "idEncomenda")
+    @JoinColumn(name = "id_encomenda_atual", referencedColumnName = "id_encomenda")
     private Encomenda encomendaAtual;
 
     public Compartimento() {}

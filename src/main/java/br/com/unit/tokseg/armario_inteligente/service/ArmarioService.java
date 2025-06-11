@@ -3,7 +3,6 @@ package br.com.unit.tokseg.armario_inteligente.service;
 import br.com.unit.tokseg.armario_inteligente.model.Armario;
 import br.com.unit.tokseg.armario_inteligente.model.ArmarioStatus;
 import br.com.unit.tokseg.armario_inteligente.repository.ArmarioRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

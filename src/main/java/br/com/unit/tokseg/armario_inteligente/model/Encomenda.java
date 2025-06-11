@@ -30,7 +30,7 @@ import lombok.NoArgsConstructor;
 public class Encomenda {
 
     @Id
-    @Column(name = "idEncomenda")
+    @Column(name = "id_encomenda")
     private String idEncomenda;
 
     @Column(nullable = false)
@@ -43,7 +43,7 @@ public class Encomenda {
     private LocalDateTime dataRecebimento;
 
     @ManyToOne
-    @JoinColumn(name = "idArmario", referencedColumnName = "idArmario")
+    @JoinColumn(name = "armario_id", referencedColumnName = "id")
     private Armario armario;
 
     @ManyToOne

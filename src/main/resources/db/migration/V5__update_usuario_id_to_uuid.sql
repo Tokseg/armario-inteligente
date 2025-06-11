@@ -36,5 +36,11 @@ ALTER TABLE usuarios ADD PRIMARY KEY (id);
 ALTER TABLE encomenda ADD CONSTRAINT fk_encomenda_usuario FOREIGN KEY (id_usuario) REFERENCES usuarios(id);
 ALTER TABLE notificacao ADD CONSTRAINT fk_notificacao_usuario FOREIGN KEY (id_usuario) REFERENCES usuarios(id);
 
--- Remove a coluna tipo_usuario_id que não é mais necessária
-ALTER TABLE usuarios DROP COLUMN tipo_usuario_id; 
+-- Remove a coluna tipo_usuario_id que não é mais necessária (se ela existir)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'usuarios' AND column_name = 'tipo_usuario_id') THEN
+    ALTER TABLE usuarios DROP COLUMN tipo_usuario_id;
+  END IF;
+END
+$$; 
