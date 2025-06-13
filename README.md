@@ -395,7 +395,3 @@ mvn verify
 
 ## ✨ Autor
 - Hugo Machado Ramos - [GitHub](https://github.com/Hugo-M-R)
-
-## 📄 Licença
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
-
