@@ -58,5 +58,20 @@ public class RegistroAuditoria {
 
         return dataHora;
     }
-    
+
+    public void setIdRegistro(int idRegistro) {
+        this.idRegistro = idRegistro;
+    }
+
+    public void setAcao(String acao) {
+        this.acao = acao;
+    }
+
+    public void setDetalhes(String detalhes) {
+        this.detalhes = detalhes;
+    }
+
+    public void setDataHora(LocalDateTime dataHora) {
+        this.dataHora = dataHora;
+    }
 }

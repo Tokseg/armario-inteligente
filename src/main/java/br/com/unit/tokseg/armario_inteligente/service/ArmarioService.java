@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import br.com.unit.tokseg.armario_inteligente.annotation.Auditavel;
+
 /**
  * Serviço responsável pela lógica de negócios relacionada aos armários.
  * Implementa as operações de CRUD e regras específicas do domínio.
@@ -58,6 +60,7 @@ public class ArmarioService {
      * @return Armário salvo com ID gerado
      * @throws IllegalArgumentException se o armário for nulo ou inválido
      */
+    @Auditavel(acao = "CADASTRO_ARMARIO", detalhes = "Cadastro de novo armário no sistema")
     @Transactional
     public Armario salvar(Armario armario) {
         if (armario == null) {
@@ -144,6 +147,7 @@ public class ArmarioService {
      * @return Optional contendo o armário atualizado, ou vazio se não encontrado
      * @throws IllegalArgumentException se o novo status for nulo
      */
+    @Auditavel(acao = "ATUALIZACAO_STATUS_ARMARIO", detalhes = "Atualização de status do armário")
     @Transactional
     public Optional<Armario> atualizarStatus(UUID id, ArmarioStatus novoStatus) {
         if (id == null) {

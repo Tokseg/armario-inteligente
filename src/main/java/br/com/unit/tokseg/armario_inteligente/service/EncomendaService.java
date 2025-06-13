@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+import br.com.unit.tokseg.armario_inteligente.annotation.Auditavel;
+
 /**
  * Serviço responsável pela lógica de negócios relacionada às encomendas.
  * Implementa as operações de CRUD e regras específicas do domínio.
@@ -36,6 +38,7 @@ public class EncomendaService {
      * @return Encomenda salva com ID gerado
      * @throws IllegalArgumentException se a encomenda for nula ou inválida
      */
+    @Auditavel(acao = "CADASTRO_ENCOMENDA", detalhes = "Cadastro de nova encomenda no sistema")
     @Transactional
     public Encomenda salvar(Encomenda encomenda) {
         if (encomenda == null) {
@@ -87,6 +90,7 @@ public class EncomendaService {
      * @throws IllegalArgumentException se o ID for nulo ou vazio
      * @throws EntityNotFoundException se a encomenda não for encontrada
      */
+    @Auditavel(acao = "RETIRADA_ENCOMENDA", detalhes = "Retirada de encomenda do sistema")
     @Transactional
     public void remover(String id) {
         if (id == null || id.trim().isEmpty()) {

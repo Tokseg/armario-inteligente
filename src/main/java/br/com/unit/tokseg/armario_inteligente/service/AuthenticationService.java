@@ -6,6 +6,7 @@ import br.com.unit.tokseg.armario_inteligente.dto.RegisterRequest;
 import br.com.unit.tokseg.armario_inteligente.model.Usuario;
 import br.com.unit.tokseg.armario_inteligente.model.TipoUsuarioEnum;
 import br.com.unit.tokseg.armario_inteligente.repository.UsuarioRepository;
+import br.com.unit.tokseg.armario_inteligente.annotation.Auditavel;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +64,7 @@ public class AuthenticationService {
      * @return Resposta contendo o token JWT gerado
      * @throws IllegalArgumentException se os dados do usuário forem inválidos
      */
+    @Auditavel(acao = "REGISTRO_USUARIO", detalhes = "Registro de novo usuário no sistema")
     @Transactional
     public AuthenticationResponse register(RegisterRequest request) {
         logger.info("Iniciando registro de novo usuário: {}", request.getEmail());
@@ -103,6 +105,7 @@ public class AuthenticationService {
      * @return Resposta contendo o token JWT gerado
      * @throws IllegalArgumentException se as credenciais forem inválidas
      */
+    @Auditavel(acao = "LOGIN_USUARIO", detalhes = "Login de usuário no sistema")
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         logger.info("Iniciando autenticação para usuário: {}", request.getEmail());
 
