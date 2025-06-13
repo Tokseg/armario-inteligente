@@ -74,7 +74,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 logger.debug("Processando token JWT para usuário: {}", userEmail);
+                
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+                logger.debug("UserDetails carregado: {}", userDetails);
+                logger.debug("Authorities do UserDetails: {}", userDetails.getAuthorities());
 
                 if (jwtService.isTokenValid(jwt, userDetails)) {
                     logger.info("Token JWT válido para usuário: {}", userEmail);
@@ -84,12 +87,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     List<String> authorities = jwtService.extractClaim(jwt, claims -> 
                         (List<String>) claims.get("authorities"));
                     
-                    // Se não houver authorities no token, usar as do userDetails
                     Collection<? extends GrantedAuthority> grantedAuthorities = authorities != null ?
                         authorities.stream()
-                            .map(SimpleGrantedAuthority::new)
+                            .map(auth -> {
+                                logger.debug("Processando authority: {}", auth);
+                                if (auth.startsWith("ROLE_")) {
+                                    return new SimpleGrantedAuthority(auth);
+                                }
+                                return new SimpleGrantedAuthority("ROLE_" + auth);
+                            })
                             .collect(Collectors.toList()) :
                         userDetails.getAuthorities();
+
+                    logger.debug("Authorities processadas: {}", grantedAuthorities);
 
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             userDetails,
@@ -98,6 +108,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     );
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
+                    logger.info("Autenticação configurada com sucesso para usuário: {}", userEmail);
                 } else {
                     logger.warn("Token JWT inválido para usuário: {}", userEmail);
                 }

@@ -40,7 +40,7 @@ public class SecurityConfiguration {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/auth/**", "/h2-console/**").permitAll()
-                .requestMatchers("/api/v1/armarios/**", "/api/v1/encomendas/**").hasAnyRole("USER", "ADMIN")
+                .requestMatchers("/api/armarios/**").hasAnyRole("ADMIN", "PORTEIRO", "MORADOR")
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session

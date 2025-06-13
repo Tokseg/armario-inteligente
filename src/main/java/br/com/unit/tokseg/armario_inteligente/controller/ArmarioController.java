@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Controller responsável por gerenciar as operações relacionadas aos armários inteligentes.
@@ -122,7 +123,7 @@ public class ArmarioController {
     @PutMapping("/{id}/status")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Armario> atualizarStatus(
-            @PathVariable Long id,
+            @PathVariable UUID id,
             @RequestParam ArmarioStatus novoStatus) {
         return armarioService.atualizarStatus(id, novoStatus)
                 .map(ResponseEntity::ok)
@@ -138,7 +139,7 @@ public class ArmarioController {
      */
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Armario> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<Armario> buscarPorId(@PathVariable UUID id) {
         return armarioService.buscarPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

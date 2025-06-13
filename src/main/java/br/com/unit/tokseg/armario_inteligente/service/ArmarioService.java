@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Serviço responsável pela lógica de negócios relacionada aos armários.
@@ -144,7 +145,7 @@ public class ArmarioService {
      * @throws IllegalArgumentException se o novo status for nulo
      */
     @Transactional
-    public Optional<Armario> atualizarStatus(Long id, ArmarioStatus novoStatus) {
+    public Optional<Armario> atualizarStatus(UUID id, ArmarioStatus novoStatus) {
         if (id == null) {
             throw new IllegalArgumentException("ID do armário não pode ser nulo");
         }
@@ -167,7 +168,7 @@ public class ArmarioService {
      * @return Optional contendo o armário encontrado, ou vazio se não existir
      * @throws IllegalArgumentException se o ID for nulo
      */
-    public Optional<Armario> buscarPorId(Long id) {
+    public Optional<Armario> buscarPorId(UUID id) {
         if (id == null) {
             throw new IllegalArgumentException("ID do armário não pode ser nulo");
         }
