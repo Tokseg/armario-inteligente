@@ -15,16 +15,17 @@ services:
       SPRING_FLYWAY_ENABLED: 'true'
       SPRING_FLYWAY_BASELINE_ON_MIGRATE: 'true'
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - app-network
   # Serviço do Banco de Dados PostgreSQL
   db:
     image: postgres:15-alpine
     environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: armario
+      POSTGRES_USER: armario
+      POSTGRES_PASSWORD: armario
       POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
       - db_data:/var/lib/postgresql/data
@@ -34,7 +35,7 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U ${DB_USER} -d ${DB_NAME}']
+      test: ['CMD-SHELL', 'pg_isready -U armario -d armario']
       interval: 5s
       timeout: 5s
       retries: 5

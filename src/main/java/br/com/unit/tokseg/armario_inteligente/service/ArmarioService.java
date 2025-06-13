@@ -10,6 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+
+import br.com.unit.tokseg.armario_inteligente.annotation.Auditavel;
 
 /**
  * Serviço responsável pela lógica de negócios relacionada aos armários.
@@ -57,6 +60,7 @@ public class ArmarioService {
      * @return Armário salvo com ID gerado
      * @throws IllegalArgumentException se o armário for nulo ou inválido
      */
+    @Auditavel(acao = "CADASTRO_ARMARIO", detalhes = "Cadastro de novo armário no sistema")
     @Transactional
     public Armario salvar(Armario armario) {
         if (armario == null) {
@@ -143,8 +147,9 @@ public class ArmarioService {
      * @return Optional contendo o armário atualizado, ou vazio se não encontrado
      * @throws IllegalArgumentException se o novo status for nulo
      */
+    @Auditavel(acao = "ATUALIZACAO_STATUS_ARMARIO", detalhes = "Atualização de status do armário")
     @Transactional
-    public Optional<Armario> atualizarStatus(Long id, ArmarioStatus novoStatus) {
+    public Optional<Armario> atualizarStatus(UUID id, ArmarioStatus novoStatus) {
         if (id == null) {
             throw new IllegalArgumentException("ID do armário não pode ser nulo");
         }
@@ -167,7 +172,7 @@ public class ArmarioService {
      * @return Optional contendo o armário encontrado, ou vazio se não existir
      * @throws IllegalArgumentException se o ID for nulo
      */
-    public Optional<Armario> buscarPorId(Long id) {
+    public Optional<Armario> buscarPorId(UUID id) {
         if (id == null) {
             throw new IllegalArgumentException("ID do armário não pode ser nulo");
         }

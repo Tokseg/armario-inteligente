@@ -1,24 +1,40 @@
+-- Cria o banco de dados se não existir
+DO
+$do$
+BEGIN
+   IF NOT EXISTS (
+      SELECT FROM pg_database
+      WHERE datname = 'armario') THEN
+
+      CREATE DATABASE armario;
+   END IF;
+END
+$do$;
+
 -- Cria o usuário armario se não existir
 DO
 $do$
 BEGIN
    IF NOT EXISTS (
       SELECT FROM pg_catalog.pg_roles
-      WHERE  rolname = 'armario') THEN
+      WHERE rolname = 'armario') THEN
 
       CREATE USER armario WITH PASSWORD 'armario' CREATEDB;
    END IF;
 END
 $do$;
 
--- Concede todas as permissões no banco de dados para o usuário armario
-GRANT ALL PRIVILEGES ON DATABASE armario TO armario;
-
 -- Conecta ao banco armario
-\c armario
+\c armario;
+
+-- Garante que o usuário armario seja o dono do banco de dados
+ALTER DATABASE armario OWNER TO armario;
 
 -- Garante que o usuário armario seja o dono do schema public
 ALTER SCHEMA public OWNER TO armario;
+
+-- Concede todas as permissões no banco de dados para o usuário armario
+GRANT ALL PRIVILEGES ON DATABASE armario TO armario;
 
 -- Concede todas as permissões no schema public para o usuário armario
 GRANT ALL ON SCHEMA public TO armario;
@@ -32,4 +48,7 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO armario;
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON FUNCTIONS TO armario;
 
 -- Garante que o usuário armario tenha permissão para criar tabelas
-GRANT CREATE ON SCHEMA public TO armario; 
+GRANT CREATE ON SCHEMA public TO armario;
+
+-- Garante que o usuário armario tenha permissão para criar extensões
+GRANT CREATE ON DATABASE armario TO armario; 
