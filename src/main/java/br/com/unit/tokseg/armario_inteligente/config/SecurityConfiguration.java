@@ -41,6 +41,7 @@ public class SecurityConfiguration {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/auth/**", "/h2-console/**").permitAll()
                 .requestMatchers("/api/armarios/**").hasAnyRole("ADMIN", "PORTEIRO", "MORADOR")
+                .requestMatchers("/api/encomendas/**").hasAnyRole("ADMIN", "PORTEIRO", "MORADOR")
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session
